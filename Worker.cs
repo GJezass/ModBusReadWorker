@@ -189,7 +189,7 @@ namespace BBox_ModBusWorker
             var day = currentDate.Day.ToString().PadLeft(3, '0'); // número dia ex.: 024 
 
             // formatação do nome e path do ficheiro a criar
-            var directoryPath = Path.Combine(Environment.CurrentDirectory, $"vars/{currentDate.Year}/{month}/{day}/{setName}/{varName}");
+            var directoryPath = Path.Combine(Environment.CurrentDirectory, $"vars/{setName}/{varName}/{currentDate.Year}/{month}/{day}");
             var fileName = $"{_clientId}_{_shipId}-{setName}_{varName}_{day}.csv";
             var filePath = Path.Combine(directoryPath, fileName);
 
@@ -266,6 +266,7 @@ namespace BBox_ModBusWorker
             // a cada equipamento ligado à datasource, associa à classe
             return _configuration.GetSection("EquipmentSettings:Equipamentos")
                 .GetChildren()
+                .Where(eq => int.Parse(eq["DatasourceId"]) == datasourceId)
                 .Select(eq => new Equipment
                 {
                     Id = int.Parse(eq["Id"]),
@@ -285,6 +286,7 @@ namespace BBox_ModBusWorker
             // a cada variável ligado ao equipamento, associa à classe
             return _configuration.GetSection("EquipmentSettings:Variaveis")
                 .GetChildren()
+                .Where(varE => int.Parse(varE["EquipmentId"]) == equipmentId)
                 .Select(varE => new Variable
                 {
                     Id = int.Parse(varE["Id"]),
